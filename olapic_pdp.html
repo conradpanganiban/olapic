@@ -1,0 +1,135 @@
+<script type="text/javascript">
+var Olapic = {
+  API_KEY: "07f21340a05c2e695799e6da23151ac0304314b2e23f620490d9a5cdd4d80f4b", //API Key for BR
+  API_BASE_URL: "http://photorankapi-a.akamaihd.net",
+  AUTH_TOKEN: "?auth_token=07f21340a05c2e695799e6da23151ac0304314b2e23f620490d9a5cdd4d80f4b", //API Key for BR
+  API_VER: "&version=v2.2",
+  CALLBACK: "&callback=?",
+
+  TRACK_BASE_URL: "http://analytics.photorank.me/track/widget/",
+  RSTRING: "", // Olapic Analytics cookie value in the __olapicU key
+  TRACK_SFDP_ID: "f66b1485fe02f7e22c55f08fb00bc3aa", // Olapic instance id
+  TRACK_PDP_ID: "be67d34cd118f6594175f6a207d37fea", // Olapic instance id
+
+  // PHOTORANK API CALLS
+  getMedia: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/media/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getMediaStreams: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/media/' + objectId + '/streams/' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStream: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamMediaRecent: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + '/media/recent' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamMediaPhotorank: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + '/media/photorank' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamsByTag: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/customers/217166/streams/bytag/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getAllMediaRecent: function() {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/customers/217166/media/recent/' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getCategoryStreams: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/categories/' + objectId + '/streams/' + Olapic.AUTH_TOKEN + "&version=v2.2");
+  },
+
+  // Analytics API calls
+
+  trackBestRender: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/render/' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestMove: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/move' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackMove: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/move' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestClick: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/click' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestView: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/view' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestClose: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/close' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackStreamUpload: function(streamId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_PDP_ID + '/stream/' + streamId + '/upload_click' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  }
+
+};
+
+<script type="text/javascript">
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function addOlapicUcgToProductPg() {
+  var imgThumbsDiv = jQuery("#imageThumbs");
+  var olapicContentEmbed = '<div id=\"olapic-product-page-container\"></div>';
+  var $olapicContent = jQuery(olapicContentEmbed);
+  jQuery(imgThumbsDiv).after($olapicContent);
+    //PID is the Parent SKU (ex: 404535)
+    var pid = "";
+    pid = getParameterByName('pid');
+    pid = pid.substring(0,6);
+    console.log("pid: " + pid);
+
+    Olapic.getStreamsByTag(pid).done(function(response) {
+
+      var streamId = "";
+      streamId = response.data.id;
+
+      Olapic.getStreamMediaPhotorank(streamId).done(function(response) {
+        var mediaResponse = response.data._embedded;
+        var opi = response.data._embedded.media[0].id;
+
+        jQuery("#olapic-product-page-container").append("<div class='o-product-page-upload-photos-btn'><a href=\"javascript:showUploaderPopUp(); showBRUploader();\"><img src='/Asset_Archive/BRWeb/content/0010/006/162/assets/Product-Pg-UploadPhotos-72.png'></a></div>");
+        jQuery(".o-product-page-upload-photos-btn").after("<div class='o-product-page-ugc-image'></div>");
+        jQuery(".o-product-page-ugc-image").append("<a href=\"javascript:showShopSocialPopUp("+opi+", true);\" class='o-product-page-ugc-img-url'></a>");
+        jQuery(".o-product-page-ugc-img-url").append("<img class='o-product-page-ugc-img' />");
+        jQuery(".o-product-page-ugc-img-url img").attr( "src", response.data._embedded.media[0].images.normal );
+        jQuery(".o-product-page-ugc-image").after("<div class='o-product-page-footer'></div>");
+        jQuery(".o-product-page-footer").append("<div class='o-product-page-footer-olapic-copy'>Powered by <a href=\"http://www.olapic.com/?utm_source=referral&utm_medium=powered-by-olapic&utm_campaign=\" target=\"_blank\">Olapic</a></div>");
+        jQuery(".o-product-page-footer").append("<div class='o-product-page-footer-br-assets'></div>");
+        jQuery(".o-product-page-footer-br-assets").append("<img src=\"/Asset_Archive/BRWeb/content/0010/006/162/assets/Product-Pg-itsBanana-HL-72-02.jpg\">");
+      });
+  }).error(function() {
+      jQuery("#olapic-product-page-container").append("<div class='o-product-page-upload-photos-btn'><a href=\"javascript:showUploaderPopUp(); showBRUploader();\"><img src='/Asset_Archive/BRWeb/content/0010/006/162/assets/Product-Pg-UploadPhotos-72.png'></a></div>");
+      jQuery(".o-product-page-upload-photos-btn").after("<div class='o-product-page-ugc-image'></div>");
+      jQuery(".o-product-page-ugc-image").append("<a href=\"javascript:showUploaderPopUp(); showBRUploader();\" class='o-product-page-ugc-img-url'></a>");
+      jQuery(".o-product-page-ugc-img-url").append("<img class='o-product-page-ugc-img' />");
+      jQuery(".o-product-page-ugc-img-url img").attr( "src", "/Asset_Archive/BRWeb/content/0010/006/162/assets/Product-Pg-Default.jpg" );
+      jQuery(".o-product-page-ugc-image").after("<div class='o-product-page-footer'></div>");
+      jQuery(".o-product-page-footer").append("<div class='o-product-page-footer-olapic-copy'></div>");
+      jQuery(".o-product-page-footer").append("<div class='o-product-page-footer-br-assets'></div>");
+      jQuery(".o-product-page-footer-br-assets").append("<img src=\"/Asset_Archive/BRWeb/content/0010/006/162/assets/Product-Pg-itsBanana-HL-72-02.jpg\">");
+    });
+
+}
+
+if( window.location.pathname.indexOf('/browse/product.do') != -1 ) {
+  addOlapicUcgToProductPg();
+}
+</script>
