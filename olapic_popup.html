@@ -1,0 +1,658 @@
+<!-- Implements CORS for IE8/IE9 -->
+<script type="text/javascript" src="/Asset_Archive/BRWeb/content/0010/006/162/assets/jquery.xdomainrequest.min.js"></script>
+
+<!-- sitewide Olapic API wrapper -->
+<script type="text/javascript">
+var Olapic = {
+  API_KEY: "07f21340a05c2e695799e6da23151ac0304314b2e23f620490d9a5cdd4d80f4b", //API Key for BR
+  API_BASE_URL: "http://photorankapi-a.akamaihd.net",
+  AUTH_TOKEN: "?auth_token=07f21340a05c2e695799e6da23151ac0304314b2e23f620490d9a5cdd4d80f4b", //API Key for BR
+  API_VER: "&version=v2.2",
+  CALLBACK: "&callback=?",
+
+  TRACK_BASE_URL: "http://analytics.photorank.me/track/widget/",
+  RSTRING: "", // Olapic Analytics cookie value in the __olapicU key
+  TRACK_SFDP_ID: "f66b1485fe02f7e22c55f08fb00bc3aa", // Olapic instance id
+  TRACK_PDP_ID: "be67d34cd118f6594175f6a207d37fea", // Olapic instance id
+
+  // PHOTORANK API CALLS
+
+  getMedia: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/media/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getMediaStreams: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/media/' + objectId + '/streams/' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStream: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamMediaRecent: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + '/media/recent' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamMediaPhotorank: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/streams/' + objectId + '/media/photorank' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getStreamsByTag: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/customers/217166/streams/bytag/' + objectId + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getAllMediaRecent: function() {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/customers/217166/media/recent/' + Olapic.AUTH_TOKEN + Olapic.API_VER);
+  },
+
+  getCategoryStreams: function(objectId) {
+    return jQuery.getJSON(Olapic.API_BASE_URL + '/categories/' + objectId + '/streams/' + Olapic.AUTH_TOKEN + "&version=v2.2");
+  },
+
+  // Analytics API calls
+
+  trackBestRender: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/render/' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestMove: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/move' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackMove: function() {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/move' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestClick: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/click' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestView: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/view' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackBestClose: function(mediaId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_SFDP_ID + '/best/media/' + mediaId + '/close' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  },
+
+  trackStreamUpload: function(streamId) {
+    return jQuery.getJSON(Olapic.TRACK_BASE_URL + Olapic.TRACK_PDP_ID + '/stream/' + streamId + '/upload_click' + Olapic.AUTH_TOKEN + '&analytics_id=' + Olapic.RSTRING + '&pics=1');
+  }
+
+};
+
+// OLAPIC ANALYTICS
+
+var olapicCookieValue = gidLib.getCookie('__olapicU');
+
+if (!olapicCookieValue) {
+  var rString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+  Olapic.RSTRING = rString;
+  gidLib.setCookie('__olapicU', Olapic.RSTRING, gidLib.getFutureDate({"days": 30}), '/', '.gap.com');
+} else {
+  Olapic.RSTRING = olapicCookieValue;
+}
+
+function randomString(length, chars) {
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+}
+</script>
+
+
+<!-- Sitewide OLAPIC Lightbox -->
+<link rel="stylesheet" type="text/css" href="/Asset_Archive/BRWeb/content/0010/006/162/assets/slick/slick.css"/>
+<link rel="stylesheet" type="text/css" href="/Asset_Archive/BRWeb/content/0010/006/162/assets/slick/slick-theme.css"/>
+<script type="text/javascript" src="/Asset_Archive/BRWeb/content/0010/006/162/assets/slick/slick.min.js"></script>
+
+<style>
+#shop-social-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 970px;
+  height: 560px;
+  margin-top: -300px;
+  margin-left: -487px;
+  border: 1px solid #999;
+  box-shadow: 6px 6px 6px #CCC;
+  z-index: 600;
+  background-color: #FFF;
+}
+
+#shop-social-popup-cover {
+  display: none;
+  background-color: rgba(125,125,125,0.75);
+  width:100%;
+  height:100%;
+  position:fixed;
+  z-index:5000;
+}
+
+#shop-social-popup-inner { position: relative; width: 100%; height: 100%; margin-top: 24px; }
+
+#popup-left-col {
+  width: 475px;
+  height: 95%;
+  margin-left: 15px;
+  float: left;
+}
+
+#popup-left-col .o-ugc-image {
+  height: 417px;
+  width:  415px;
+  float: left;
+  background-size: contain;
+  background-repeat: no-repeat;
+  margin-left: 5px;
+}
+
+#popup-right-col {
+  width: 440px;
+  height: 515px;
+  overflow: hidden;
+  /*float: left;*/
+    float:right;
+  text-align: center;
+  background: none repeat scroll 0 0 #FFF;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.o-br-shop-this-look { 
+  display: block;
+  width: 440px;
+  height: 33px;
+  text-align: center;
+  margin-top: 70px;
+  margin-bottom: 30px;
+ }
+
+#popup-right-col-scroller {
+  height: 200px;
+  /* width: 440px; */
+  overflow: hidden;
+  position: relative;
+}
+
+/* SLICK SCROLLER STYLES */
+.slick-prev { position:relative; float:left; display:none !important; }
+.slick-next {
+    background-image: url('/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-MoreBtn-72.png') !important;
+    background-repeat: no-repeat !important;
+    width:50px !important;
+    height:15px !important;
+    margin-top: -58px !important;
+    margin-right: 25px  !important;
+}
+
+.taggedProduct { margin-bottom: 28px;display: inline-block;position: relative;padding: 0 25px; }
+.o-product-price { text-align: center; }
+.o-product-url { text-align: center; }
+.o-product-name { text-align: center; font-family: 'EB+Garamond', Times, serif; font-size: 1.3em; padding-top: 5px; color: #231f20; }
+.o-ugc-uploader-area { margin: 10px 0px; text-decoration: none; text-align: center; font-family: 'Open+Sans', Helvetica, Arial, sans-serif; font-weight: 300; font-size: 1.4em; color: #333; }
+.o-ugc-uploader { margin: 10px 0px; text-decoration: none; text-align: center; }
+.o-ugc-uploader a { text-decoration: none; font-family: 'Open+Sans', Helvetica, Arial, sans-serif; font-weight: 700; font-size: 1.4em; color: #231f20; }
+.o-ugc-uploader a:hover { text-decoration: underline; color: #999; }
+.o-br-social-share { text-align: center; }
+.o-upload-photos-button { text-align: center; }
+.o-ucg-uploader-social img { 
+  width: 10px; 
+  height: 10px;
+}
+
+.o-ugc-prev-image {
+  position: relative;
+  width: 25px;
+  float: left;
+  margin-top: 200px;
+}
+
+.o-ugc-next-image {
+  position: relative;
+  width: 25px;
+  float: left; 
+  margin-left: 5px;
+  margin-top: 200px;
+}
+
+.o-related-feeds { text-transform: uppercase; margin-top: 30px; }
+.o-related-feeds h3 { font-weight: bold; font-family: "Trebuchet MS", serif; font-size: 14px; letter-spacing: 1px; }
+.o-related-feeds a { text-decoration: none; font-family: "Trebuchet MS", serif; font-size: 14px; letter-spacing: 1px; }
+.o-related-feeds a:hover { text-decoration: none; color: #000; font-weight: bold; }
+.o-related-feeds li { margin-bottom: 2px; }
+
+#button-x-close {
+  background-image: url(/Asset_Archive/BRWeb/content/0010/006/162/assets/close.png);
+  background-repeat: no-repeat;
+  display: block;
+  width: 21px;
+  height: 21px;
+  position: absolute;
+  top: 2px;
+  right: 13px;
+}
+
+#shop-social-popup .o-credit { position: absolute; bottom: 30px; right: 5px; color: #CCC; font-size: 1em; }
+#shop-social-popup .o-credit a { font-size: 1em; color: #CCC; text-decoration: none; }
+#shop-social-popup .o-credit a:hover { text-decoration: none; color: #000; }
+#shop-social-popup .o-credit img { width: 20px; margin-right: 5px; }
+
+
+/* Olapic Photo Uploader */
+#uploader-popup {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 970px;
+  height: 530px;
+  margin-top: -270px;
+  margin-left: -487px;
+  border: 1px solid #999;
+  box-shadow: 6px 6px 6px #CCC;
+  z-index: 100;
+  background-color: #FFF;
+}
+
+#uploader-popup-inner { position: relative; width: 100%; height: 100%; margin-top: 10px; }
+
+/* UGC Report Window */
+#o-ugc-report-popup {
+
+}
+
+/* IMPORT GOOGLE FONTS */
+@import url(//fonts.googleapis.com/css?family=Roboto:400,300,100,500);
+@import url(//fonts.googleapis.com/css?family=EB+Garamond);
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300,700);
+
+/* */
+
+#versatilityCarousel1{
+    width: 440px;
+    height: 250px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow:hidden;
+}
+    /*
+ #versatilityCarouselNav1{ width:27px;height: 250px;margin-top:0px;
+     z-index:10;position:absolute;
+     
+ }
+    */
+    #versatilityCarouselNav1 img{ width: 27px;height:250px;
+    }
+    
+    .versatilityCarouselImg1{ 
+                                position:relative;
+                            margin-left:auto !important;
+                            margin-right: auto !important;
+    }
+    .absoluteClass{
+                    position: absolute;
+                    left:28%;
+                    top:0px;
+                    display:block;
+    }
+</style>
+
+<!-- BEGIN: OLAPIC POPUP -->
+<div id="shop-social-popup" data-media-id="">
+  <div id="shop-social-popup-inner">
+    <a href="javascript:void(0)" id="button-x-close" style="display: block; width: 21px; height: 21px; position: absolute; top: 2px; right: 13px;" onclick="closeShopSocialPopUp();"></a>
+    <div id="popup-left-col">
+      <div class="o-ugc-uploader"><span class="o-ucg-uploader-social"></span> Photo by <a href="javascript:void(0)" target="_blank"></a></div>
+      <div class="o-ugc-prev-image"><a class="br-photostream-prev" href="#"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-PrevArrow-72.png"></a></div>
+      <div class="o-ugc-image"></div>
+      <div class="o-ugc-next-image"><a class="br-photostream-next" href="#"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-NextArrow-72.png"></a></div>
+      <div class="o-br-social-share"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-CareToShare-72-v2.png" usemap="#careToShare_links" /></div>
+      <!--<div class="o-prev-next-test-buttons"><a class="br-photostream-prev" href="#">Previous</a> | <a class="br-photostream-next" href="#">Next</a></div>-->
+    </div>
+    <div id="popup-right-col">
+      <div class="o-br-shop-this-look"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-ShopThisLook-72-v2.png"></div>
+      
+<div id="versatilityCarousel1">
+    <div class="absoluteClass">
+        <div class="taggedProduct">
+            <a href="" onclick="" class="o-product-url"><img src="/assets/common/clear.gif" /></a>
+            <div class="o-product-name"></div>
+        </div>
+    </div>
+</div>
+
+      <div class="o-upload-photos-button"><a href="javascript:showUploaderPopUp(); showBRUploader(); closeShopSocialPopUp();"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-UploadPhotos-72.png" /></a></div>
+    </div>
+    <div class="o-credit"><a href="http://olapic.com" target="_blank" title="Powered by Olapic"><img src="/Asset_Archive/BRWeb/content/0010/006/161/assets/olapicIcon.png" alt="Olapic Icon"></a></div>
+  </div>
+</div>
+
+<!-- END: OLAPIC POPUP -->
+
+<!-- BEGIN: OLAPIC UPLOADER WINDOW -->
+<div id="uploader-popup">
+  <div id="uploader-popup-inner">
+    <a href="javascript:void(0)" id="button-x-close" style="display: block; width: 22px; height: 22px; position: absolute; top: 2px; right: 10px;" onclick="closeUploaderPopUp();"></a>
+    <iframe name='olapic-upload' id="olapic-upload" frameborder="0" border="0" cellspacing="0" style="border-style: none; width: 100%; height: 97%;"></iframe>
+</div>
+<!-- END: OLAPIC UPLOADER WINDOW -->
+
+<map name="careToShare_links">
+  <area coords="30,17,55,40" href="https://www.facebook.com/sharer/sharer.php?u=http://www.brol.wip.gidapps.com/browse/info.do?cid=1036969" target="_blank" />
+  <area coords="63,16,88,39" href="https://twitter.com/home?status=https://www.facebook.com/sharer/sharer.php?u=http://www.brol.wip.gidapps.com/browse/info.do?cid=1036969" target="_blank" />
+  <area coords="92,17,117,40" href="https://pinterest.com/pin/create/button/?url=&media=https://www.facebook.com/sharer/sharer.php?u=http://www.brol.wip.gidapps.com/browse/info.do?cid=1036969&description=" target="_blank" />
+</map>
+
+<script type="text/javascript">
+
+  function initSlickScroller() {
+    jQuery("#versatilityCarousel1").slick({
+      infinite: false,
+      slidesToShow: 2,
+      slidesToScroll: 2,
+      nextArrow: '<button type="button" class="versatilityCarousel1Nav slick-next"><img src="/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-MoreBtn-72.png"></button>'
+    });
+  }
+
+  function jsonArrayScroller(scrollValue) {
+    console.log('jsonArrayScroller fired!');
+    var jsonArrayScroller = '';
+    jsonArrayScroller = scrollValue;
+    console.log('jsonArrayScroller' + jsonArrayScroller);
+    return jsonArrayScroller;
+
+  }
+
+function closeShopSocialPopUp() {
+  jQuery("#shop-social-popup").fadeOut("fast");
+  var mediaId = jQuery("#shop-social-popup").attr("data-media-id");
+  Olapic.trackBestClose(mediaId).done(function(response) { });
+}
+
+function showShopSocialPopUp(opi, fromNav) {
+  jQuery("#shop-social-popup").fadeIn("fast");
+  jQuery("#shop-social-popup").attr("data-media-id", opi);
+
+  Olapic.getMedia(opi).done(function(response) {
+
+    Olapic.trackBestClick(opi).done(function(response) { });
+    Olapic.trackBestView(opi).done(function(response) { });
+    if (fromNav) {
+      Olapic.trackMove(opi).done(function(response) { });
+    }
+      
+    jQuery("#popup-left-col .o-ugc-image").css("background-image", "url(" + response.data.images.normal + ")");
+
+    var ugcUploaderName = response.data._embedded.uploader.username;
+    jQuery("#popup-left-col .o-ugc-uploader a").html("");
+    if (ugcUploaderName) { ugcUploaderName = ugcUploaderName.toLowerCase(); }
+
+    
+    if (ugcUploaderName != 'lindsay_piperlime' && ugcUploaderName != 'lindsay_martinsen' && ugcUploaderName != 'topknottedgirl' && ugcUploaderName != 'sfgirl1987' && ugcUploaderName != 'avpiperlime' && ugcUploaderName != 'hautekokkari' && ugcUploaderName != 'piperlime' && ugcUploaderName != 'lindsay-martinsen') {
+      jQuery("#popup-left-col .o-ugc-uploader a").html(ugcUploaderName);
+    }
+    
+
+    if (response.data._embedded.uploader.social_connections.instagram) {
+      jQuery("#popup-left-col .o-ugc-uploader .o-ucg-uploader-social").html("<img src='/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-InstagramIcon-72.png'>")
+      jQuery("#popup-left-col .o-ugc-uploader a").attr("href", "http://instagram.com/" + response.data._embedded.uploader.social_connections.instagram.username);
+    } else if (response.data._embedded.uploader.social_connections.twitter) {
+      jQuery("#popup-left-col .o-ugc-uploader .o-ucg-uploader-social").html("<img src='/Asset_Archive/BRWeb/content/0010/006/162/assets/Lightbox-TwitterIcon-72.png'>")
+      jQuery("#popup-left-col .o-ugc-uploader a").attr("href", "http://twitter.com/" + response.data._embedded.uploader.social_connections.twitter.username);
+    }
+    console.log('showShopSocialPopUp fired!');
+    showTaggedProducts(opi);
+    showNextPrevUgcStream(opi);
+    
+  });
+}
+
+function showTaggedProducts(opi) {
+    console.log('showTaggedProducts fired!');
+    Olapic.getMediaStreams(opi).done(function(response) {
+
+      clearTaggedProducts();
+
+      var productImages = [];
+      var productPrices = [];
+      var productNames = [];
+      var productUrls = [];
+      var indexTaggedProduct = -1;
+      
+      var jsonObjectArray = response.data._embedded.stream;
+      jsonObjectArray.reverse();
+
+      jQuery.each(jsonObjectArray, function( index, value ) {
+        if (value.tag_based_key) {
+          indexTaggedProduct++;
+          // if more than one tagged product, create new elements as needed
+          if (indexTaggedProduct > 0) {
+            jQuery(".taggedProduct:eq(0)").clone().appendTo("#versatilityCarousel1");
+          }
+
+          productImages[indexTaggedProduct] = value._embedded.base_image.images.thumbnail;
+          productPrices[indexTaggedProduct] = value.product_info.price;
+          productNames[indexTaggedProduct] = value.name;
+
+          var relativeProductUrl = value.product_url;
+          relativeProductUrl = relativeProductUrl.replace(/^.*\/\/[^\/]+/, '');       
+          productUrls[indexTaggedProduct] = relativeProductUrl;
+
+          var olapicTrackUrl = "http://analytics.photorank.me/track/widget/";
+          olapicTrackUrl += brOlapic.widgetInstanceHash;
+          olapicTrackUrl += "/stream/";
+          olapicTrackUrl += brOlapic.photoListEntityData.id;
+          olapicTrackUrl += "/media/";
+          olapicTrackUrl += opi;
+          olapicTrackUrl += "/shop?analytics_id=";
+          olapicTrackUrl += Olapic.RSTRING;
+          olapicTrackUrl += "&pics=";
+          olapicTrackUrl += brOlapic.mediaList.length;
+          olapicTrackUrl += "&redirect_url=";
+          olapicTrackUrl += encodeURIComponent(location.host);
+          olapicTrackUrl += encodeURIComponent(productUrls[indexTaggedProduct]);
+          olapicTrackUrl += "&auth_token=" + Olapic.API_KEY;
+
+              if (jsonObjectArray.length >= 2) {
+                jQuery(".o-product-url img:eq(" + indexTaggedProduct + ")").attr( { 
+                  src: productImages[indexTaggedProduct],
+                  width: "100px"
+                });
+                jQuery(".o-product-name").css( {
+                  textAlign: "center",
+                        width:"100px",
+                        overflow:"auto"
+                }); 
+                  /*------*/
+                jQuery(".absoluteClass").css({
+                    position:"relative",
+                    display:"inline-block",
+                    left:"0px"
+                });
+                jQuery(".taggedProduct").css({
+                    width:"110px"
+                }); 
+
+              } else if (jsonObjectArray.length == 1)  {
+                  /*
+                jQuery(".taggedProduct").css({
+                        width:"100%",
+                         padding:"0 !important"
+                     }); 
+                 jQuery(".taggedProduct").addClass("versatilityCarouselImg1");
+                  
+                jQuery(".o-product-url img:eq(" + indexTaggedProduct + ")").attr( {
+                        src:productImages[indexTaggedProduct],
+                        width:"150px"
+                    });
+                jQuery(".o-product-name").css( {
+                    marginLeft:"auto",
+                    marginRight:"auto",
+                    width:"150px",
+                    overflow:"auto"
+                } );
+                  */
+                  /*-------*/
+                  
+                    jQuery(".o-product-url img:eq(" + indexTaggedProduct + ")").attr( {
+                        src:productImages[indexTaggedProduct],
+                        width:"150px"
+                    });
+                    jQuery(".o-product-name").css( {
+                        marginLeft:"auto",
+                        marginRight:"auto",
+                        width:"150px",
+                        overflow:"auto"
+                    }); 
+              }
+
+          jQuery(".o-product-url:eq(" + indexTaggedProduct + ")").attr("href", olapicTrackUrl);
+          jQuery(".o-product-name:eq(" + indexTaggedProduct + ")").html(productNames[indexTaggedProduct].split('|')[0]);
+
+        } else {
+          // show related style feed streams/products
+          if (value.name.split("|").length == 3) {
+            jQuery(".o-related-feeds").show();
+            var trendName = value.name.split("|")[2];
+            if (trendName) trendName = trendName.trim();
+            // if Stylefeed page... else...
+            if (location.search.indexOf('cid=1016900') > -1) {
+              jQuery("#popup-left-col .o-related-feeds ul").append("<li><a href='javascript:void(0)' data-stream-id=" + "'" + value.id + "'" + "data-stream-name=" + "'" + trendName + "'" + "data-stream-type='trend'>" + trendName + "</a></li>");
+            } else {
+              jQuery("#popup-left-col .o-related-feeds ul").append("<li><a href='/browse/division.do?cid=1016900#trend=" + trendName + "|" + value.id + "'>" + trendName + "</a></li>");
+            }
+          }
+        }
+
+      });
+
+      
+      if (jsonObjectArray.length > 2) {
+        //jsonArrayScroller(true);
+        //initSlickScroller();
+      }
+
+
+    }).done(function() {
+        console.log('done fired!');
+    }).fail(function() {
+      // if we fail to get any associated streams (tagged products) from the response, reset the first tagged product template.
+      // this is kind of hacky... TODO: refactor
+      clearTaggedProducts();
+    });
+}
+
+function showNextPrevUgcStream(opi) {
+  console.log('showNextPrevUgcStream fired!');
+  var ugcPhotoId = opi;
+  var ugcPhotoStreamList = brOlapic.mediaList;
+  
+  var ugcPhotoStreamArray = new Array();
+  for (var i=0; i < ugcPhotoStreamList.length; i++) {
+    ugcPhotoStreamArray.push( parseInt(ugcPhotoStreamList[i].id) );
+  }
+  var ucgPhotoIdIndex = ugcPhotoStreamArray.indexOf(ugcPhotoId);
+  var ugcPhotoFirstId = ugcPhotoStreamList[0].id;
+  var ugcPhotoLastId = ugcPhotoStreamList[ugcPhotoStreamArray.length - 1].id;
+
+  var ucgPhotoIdPrevIndex = ( ucgPhotoIdIndex - 1 );
+  
+  if (ucgPhotoIdPrevIndex == '-1') {
+    var ucgPhotoIdPrev = parseInt(ugcPhotoLastId);
+  } else {
+    var ucgPhotoIdPrev = parseInt(ugcPhotoStreamList[ucgPhotoIdPrevIndex].id);
+  }
+  
+  var ucgPhotoIdNextIndex = ( ucgPhotoIdIndex + 1 );
+  if (ucgPhotoIdNextIndex == (ugcPhotoStreamArray.length)) {
+    var ucgPhotoIdNext = parseInt(ugcPhotoFirstId);
+  } else {
+    var ucgPhotoIdNext = parseInt(ugcPhotoStreamList[ucgPhotoIdNextIndex].id);
+  }
+
+
+
+  jQuery(".br-photostream-prev").attr("href", "javascript:clearTaggedProducts(); showShopSocialPopUp("+ucgPhotoIdPrev+", true);");
+  // jQuery(".br-photostream-prev").bind("click", function() {
+  //   Olapic.trackPrevMove(opi).done(function(response) { });
+  // });
+
+  jQuery(".br-photostream-next").attr("href", "javascript:clearTaggedProducts(); showShopSocialPopUp("+ucgPhotoIdNext+", true)");
+  // jQuery(".br-photostream-next").bind("click", function() {
+  //   Olapic.trackNextMove(opi).done(function(response) { });
+  // });
+
+}
+
+function showBRUploader() {
+  jQuery('#olapic-upload').attr('src','https://sandbox.photorank.me/uploader/bananarepublic'); //change to www.photorank.me when it goes live
+}
+
+function closeUploaderPopUp() {
+  jQuery("#uploader-popup").fadeOut("fast");
+}
+
+function showUploaderPopUp() {
+  jQuery("#uploader-popup").fadeIn("fast");
+}
+
+function clearTaggedProducts() {
+  console.log('clearTaggedProducts fired!');
+  jQuery(".o-related-feeds").hide();
+  jQuery(".taggedProduct:not(:eq(0))").remove();
+  jQuery(".o-product-url img:eq(0)").attr( { 
+    src: "/assets/common/clear.gif",
+    width: "",
+    marginLeft: ""
+  } );
+  jQuery(".o-product-url:eq(0)").attr("href", "javascript:void(0)");
+  jQuery(".o-product-name:eq(0)").html("");
+  jQuery(".o-product-name:eq(0)").css("");
+  jQuery(".o-product-price:eq(0)").html("");
+
+  jQuery("#popup-left-col .o-related-feeds ul li:not(:eq(0))").remove();
+  jQuery("#popup-left-col .o-related-feeds ul li:eq(0)").html("");
+  /*jQuery(".taggedProduct").removeClass("versatilityCarouselImg1");*/
+}
+
+</script>
+
+<!-- Olapic UGC Product Placement : Using the Olapic JS Widget -->
+<script type="text/javascript">
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function addOlapicProduct() { 
+  var imgThumbsDiv = jQuery("#imageThumbs");
+
+  var olapicContentEmbed = '<div id=\"olapic_specific_widget\"></div>';
+  var $olapicContent = jQuery(olapicContentEmbed);
+  jQuery(imgThumbsDiv).after($olapicContent);
+
+  //var pid = getParameterByName('pid');
+  var pid = gidLib.getQuerystringParam("pid");
+
+  var olapicBrProdPgScript = document.createElement("script"); 
+  olapicBrProdPgScript.async = true;
+  olapicBrProdPgScript.setAttribute("data-apikey", encodeURIComponent( "07f21340a05c2e695799e6da23151ac0304314b2e23f620490d9a5cdd4d80f4b" )); //BR API KEY
+  olapicBrProdPgScript.setAttribute("data-olapic", encodeURIComponent( "olapic_specific_widget" ));
+  olapicBrProdPgScript.setAttribute("data-instance", encodeURIComponent( "c6c11b689628cb8da184152ccb080e97" ));
+  olapicBrProdPgScript.setAttribute("data-tags", encodeURIComponent( pid ));
+  olapicBrProdPgScript.src="//photorankstatics-a.akamaihd.net/81b03e40475846d5883661ff57b34ece/static/frontend/latest/build.min.js";
+
+  document.body.appendChild(olapicBrProdPgScript);
+}
+
+if( location.pathname == '/browse/product.do' ) {
+  addOlapicProduct();
+}
+
+</script>
